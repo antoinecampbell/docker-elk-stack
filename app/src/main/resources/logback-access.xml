@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="HTTPOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashAccessEncoder">
+            <Pattern>%h %l %u %t "%r" %s %b "%i{Referer}" "%i{User-Agent}" %D</Pattern>
+            <!-- uncomment TeeFilter in Application to enable this pattern -->
+            <!--<Pattern>%fullRequest%n%n%fullResponse</Pattern>-->
+        </encoder>
+    </appender>
+
+    <appender-ref ref="HTTPOUT"/>
+
+    <root level="INFO">
+        <appender-ref ref="HTTPOUT"/>
+    </root>
+
+</configuration>

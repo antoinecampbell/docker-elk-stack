@@ -1,0 +1,52 @@
+version: '2'
+services:
+  elasticsearch:
+    image: elasticsearch:5
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - LOGSPOUT=ignore
+  logstash:
+    image: logstash:5
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    volumes:
+      - ./logstash-config:/etc/logstash/conf.d
+    ports:
+      - "5000:5000"
+      - "5000:5000/udp"
+    depends_on:
+      - elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+  kibana:
+    image: kibana:5
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    environment:
+      - LOGSPOUT=ignore
+  logspout:
+    image: bekt/logspout-logstash
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - ROUTE_URIS=logstash+tcp://logstash:5000
+      - LOGSPOUT=ignore
+    depends_on:
+      - logstash
+    restart: always
+  app:
+    build: app/
+    image: local/my_app
+    ports:
+      - "8080:8080"
+    environment:
+      - server.port=8080
+      - spring.main.banner_mode=off
+      - logging.level.root=INFO
+      - server.tomcat.accesslog.directory=/
+      - server.tomcat.accesslog.enabled=true
+      - server.tomcat.accesslog.rename-on-rotate=true
+      - server.tomcat.accesslog.pattern=%h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i" %D
