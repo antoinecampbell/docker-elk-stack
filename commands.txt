@@ -1,0 +1,18 @@
+# Build spring-boot app
+./gradlew build
+
+# Run jmeter test plan via command line
+./jmeter -n -t ~/Developer/docker/elk-stack/elk-stack.jmx
+
+# Apache Benchmark test
+ab -n 1000 -c 5 http://localhost:8080/items
+
+# docker stats with container names
+docker stats $(docker ps --format={{.Names}})
+
+# docker-compose stop and remove containers/volumes
+docker-compose stop && docker-compose rm -vf
+docker-compose down -v
+
+# docker-compose alternate file
+docker-compose -f docker-compose-load-balanced.yml

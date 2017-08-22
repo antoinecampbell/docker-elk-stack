@@ -5,8 +5,14 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 1g
     environment:
       - LOGSPOUT=ignore
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
   logstash:
     image: logstash:5
     command: logstash -f /etc/logstash/conf.d/logstash.conf
